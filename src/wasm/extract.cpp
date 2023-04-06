@@ -113,7 +113,8 @@ void file_output::close() {
 
 
 void file_output::settime(time_t t){
-  zip_.setTime(zipindex_, t);
+  if(zip_open_)
+    zip_.setTime(zipindex_, t);
 }
 
 bool file_output::is_complete() const { return total_written_ == file_->entry().size; }

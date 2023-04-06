@@ -138,16 +138,11 @@ void open(const char *name, const char *modes){
   open_int(name, modes);
 }
 
-EM_JS(size_t, write_int, (const void *ptr, size_t size, size_t n), {
+EM_ASYNC_JS(size_t, write_int, (const void *ptr, size_t size, size_t n), {
   let buff = new Uint8Array(Module.HEAPU8.buffer, ptr, size*n);
 
-  Module.writer.write(buff); //.then(() => {
+  await Module.writer.write(buff); //.then(() => {
   console.log("zipstream: write "+(size*n));
-  //   Module.ccall('set_write_ready', 'number', ['number'], [ 1 ]);
-  // })
-  // .catch((err) => {
-  //   console.log("zipstream: write err:", err);
-  // });
 });
 
 size_t write(const void *ptr, size_t size, size_t n){
