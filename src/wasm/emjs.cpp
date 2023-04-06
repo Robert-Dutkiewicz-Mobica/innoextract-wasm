@@ -1,5 +1,6 @@
 #include <string>
 #include <sstream>
+#include <iostream>
 #include <iomanip>
 #include <emscripten/emscripten.h>
 #include "wasm/extract.hpp"
@@ -129,8 +130,6 @@ EM_JS(void, open_int, (const char *name, const char *modes), {
     Module.writer = fileStream.getWriter();
   }
   Module.writer.ready.then(() => {
-  // Module.ccall('set_write_ready', 'number', ['number'], [ 1 ]);
-  // console.log("open write_ready=1");
   console.log("zipstream: open, ready");
   });
 });
@@ -139,10 +138,10 @@ void open(const char *name, const char *modes){
   open_int(name, modes);
 }
 
-EM_ASYNC_JS(size_t, write_int, (const void *ptr, size_t size, size_t n), {
+EM_JS(size_t, write_int, (const void *ptr, size_t size, size_t n), {
   let buff = new Uint8Array(Module.HEAPU8.buffer, ptr, size*n);
 
-  await Module.writer.write(buff); //.then(() => {
+  Module.writer.write(buff); //.then(() => {
   console.log("zipstream: write "+(size*n));
   //   Module.ccall('set_write_ready', 'number', ['number'], [ 1 ]);
   // })
@@ -152,13 +151,17 @@ EM_ASYNC_JS(size_t, write_int, (const void *ptr, size_t size, size_t n), {
 });
 
 size_t write(const void *ptr, size_t size, size_t n){
-  // printf("wait  write_ready = %d\n", write_ready);
-  // while(!write_ready)
-  	// emscripten_sleep(1);
+  static char buff[64*1024*1024];
+  static int bpos = 0;
+  if((bpos+size*n > sizeof(buff)) || (ptr == NULL)) {
+    std::cout << "writing " << bpos << "bytes\n";
+    write_int(buff, 1, bpos);
+    bpos = 0;
+  }
 
-  // write_ready = 0;
-  // puts("set write_ready=0");
-  write_int(ptr, size, n);
+  memcpy(buff+bpos, ptr, size*n);
+  bpos += size*n;
+
   return size*n;
 }
 

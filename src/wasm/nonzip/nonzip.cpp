@@ -107,7 +107,7 @@ int Nonzip::appendFile(const void *data, uint32_t dlen) {
     dlen = emjs::write(data, 1, dlen); // Write file data
     offset += dlen;
 
-    printf("Appending file %s: len=%u(+%u), offset=%u\n", files[i]->zf_name, files[i]->zf_csize , dlen, files[i]->zf_offset);
+    // printf("Appending file %s: len=%u(+%u), offset=%u\n", files[i]->zf_name, files[i]->zf_csize , dlen, files[i]->zf_offset);
 
     return dlen;
 }
@@ -121,7 +121,7 @@ int Nonzip::close() {
     uint32_t cdoffset = offset;
     for (i = 0; i < numfiles; i++) {
         filetocf(&cf, files[i]);
-        cdsize += sizeof(cf) * emjs::write(&cf, sizeof(cf), 1);  // write central file header
+        cdsize += emjs::write(&cf, sizeof(cf), 1);  // write central file header
         cdsize += emjs::write(files[i]->zf_name, 1, files[i]->zf_fnlen);  // write filename
         free(files[i]->zf_name);
         free(files[i]);
@@ -137,6 +137,7 @@ int Nonzip::close() {
     end.en_cdsize = cdsize;
     end.en_clen = sizeof(nonzip_comment) - 1;
     emjs::write(&end, sizeof(end), 1);
+    emjs::write(NULL, 0, 0);
     emjs::close();
 
     status = NONZIP_STATUS_IDLE;
