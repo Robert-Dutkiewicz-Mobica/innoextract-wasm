@@ -84,7 +84,7 @@ function extractFiles() {
     checked = tree.treeview('getChecked');
     ids = []
     for (const element of checked) {
-        if (element.fileId)
+        if (element.fileId !== undefined)
             ids.push(element.fileId);
     }
     Module.ccall('extract', 'string', ['string'], [JSON.stringify(ids)], {async: true}).then(result =>{
