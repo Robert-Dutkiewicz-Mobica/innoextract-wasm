@@ -86,7 +86,7 @@ function make_json() {
     wget -nv https://github.com/nlohmann/json/archive/refs/tags/v3.11.2.tar.gz || die "Downloading nlohmann::json failed"
 
     info "Unpacking nlohmann::json..."
-    tar -xaf v3.11.2.tar.gz && cd libzip-1.9.2 || die "Unpacking nlohmann::json failed"
+    tar -xaf v3.11.2.tar.gz && cd json-3.11.2 || die "Unpacking nlohmann::json failed"
 }
 
 test_deps_or_build

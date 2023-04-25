@@ -3,6 +3,7 @@
 
 #define NONZIP_PLATFORM
 
+
 #ifdef NONZIP_PLATFORM
 #include "wasm/emjs.h"
 #endif
